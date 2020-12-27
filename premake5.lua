@@ -1,74 +1,45 @@
--- premake5.lua
-workspace "Envii"
-   architecture "x86_64" 
-   configurations { "Debug", "Release", "Dist" }
-
-outputdir = "%{cfg.buildcfg}/%{cfg.architecture}/"
-project "Envii"
-   location "Envii"
+project "glfw"
    kind "StaticLib"
-   language "C++"
+   language "C"
    targetdir ("bin/" .. outputdir .. "%{prj.name}")
    objdir ("Intermediate/" .. outputdir .. "%{prj.name}")
 
-   pchheader "evpch.h"
-   pchsource "%{prj.name}/src/evpch.cpp"
+   files { "include/GLFW/glfw3.h", 
+           "include/GLFW/glfw3native.h",
+           "src/glfw_config.h",
+           "src/context.c",
+           "src/init.c"
+           "src/input.c"
+           "src/monitor.c"
+           "src/vulkan.c"
+           "src/window.c"
+         }
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp" }
-
-   includedirs { "%{prj.location}/src",
-                 "%{wks.location}/Envii/thirdparty/spdlog/include" }
+   --includedirs { "%{prj.location}/src",
 
    filter "system:windows"
-      cppdialect "C++17"
+      buildoptions { "-std=c11", "-lgdi32" }
       staticruntime "On"
       systemversion "latest"
-      defines "EV_PLATFORM_WINDOWS"
+      
+      files
+      {
+         "src/win32_init.c",
+         "src/win32_joystick.c",
+         "src/win32_monitor.c",
+         "src/win32_time.c",
+         "src/win32_thread.c",
+         "src/win32_window.c",
+         "src/wgl_context.c",
+         "src/egl_context.c",
+         "src/osmesa_context.c"
+      }
 
-      postbuildcommands {
-         ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "Sandbox")
+      defines
+      {
+         "_GLFW_WIN32",
+         "_CRT_SECURE_NO_WARNINGS"
       }
    
-   filter "configurations:Debug"
-      defines { "EV_DEBUG", "_DEBUG", "_CONSOLE" }
-      symbols "On"
-
-   filter "configurations:Release"
-      defines { "EV_RELEASE", "NDEBUG", "_CONSOLE" }
-      optimize "On"
-
-   filter "configurations:Dist"
-      defines { "EV_DIST", "NDEBUG", "_CONSOLE" }
-      optimize "On"
-
-project "Sandbox"
-   location "Sandbox"
-   kind "ConsoleApp"
-   language "C++"
-   targetdir ("bin/" .. outputdir .. "%{prj.name}")
-   objdir ("Intermediate/" .. outputdir .. "%{prj.name}")
-
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp" }
-
-   includedirs { "%{wks.location}/Envii/src/Client",
-                 "%{wks.location}/Envii/thirdparty/spdlog/include" }
-   
-   links "Envii" 
-   
-   filter "system:windows"
-      cppdialect "C++17"
-      staticruntime "On"
-      systemversion "latest"
-      defines "EV_PLATFORM_WINDOWS"
-
-   filter "configurations:Debug"
-      defines { "EV_DEBUG", "_DEBUG", "_CONSOLE" }
-      symbols "On"
-
-   filter "configurations:Release"
-      defines { "EV_RELEASE", "NDEBUG", "_CONSOLE" }
-      optimize "On"
-
-   filter "configurations:Dist"
-      defines { "EV_DIST", "NDEBUG", "_CONSOLE" }
-      optimize "On"
+   filter { "system:windows", "configurations:Release" }
+      buildoptions "/MT"
