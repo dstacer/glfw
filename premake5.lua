@@ -1,8 +1,8 @@
 project "glfw"
    kind "StaticLib"
    language "C"
-   targetdir ("bin/" .. outputdir .. "%{prj.name}")
-   objdir ("Intermediate/" .. outputdir .. "%{prj.name}")
+   targetdir ("bin/" .. outputdir)
+   objdir ("Intermediate/" .. outputdir)
 
    files { "include/GLFW/glfw3.h", 
            "include/GLFW/glfw3native.h",
