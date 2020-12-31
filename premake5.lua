@@ -1,5 +1,6 @@
 project "glfw"
    kind "StaticLib"
+   staticruntime "on"
    language "C"
    targetdir ("bin/" .. outputdir)
    objdir ("Intermediate/" .. outputdir)
@@ -16,10 +17,8 @@ project "glfw"
          }
 
    filter "system:linux"
-		pic "On"
-
+		pic "on"
 		systemversion "latest"
-		staticruntime "On"
 
 		files
 		{
@@ -41,7 +40,6 @@ project "glfw"
 		}
 
    filter "system:windows"
-      staticruntime "On"
       systemversion "latest"
       
       files
@@ -70,3 +68,4 @@ project "glfw"
 	filter "configurations:Release"
 		runtime "Release"
 		optimize "on"
+
